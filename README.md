@@ -13,6 +13,8 @@
 
 Oracle bundles your prompt and files so another AI can answer with real context. It speaks GPT-5.5 Pro (default), GPT-5.5, GPT-5.4 Pro, GPT-5.4, GPT-5.1 Pro, GPT-5.1 Codex (API-only), GPT-5.1, GPT-5.2, Gemini 3.1 Pro (API-only), Gemini 3 Pro, Claude Sonnet 4.6, Claude Opus 4.1, and more—and it can ask one or multiple models in a single run. Browser automation is available; use `--browser-model-strategy current` to keep the active ChatGPT model (or `ignore` to skip the picker). API remains the most reliable path, and `--copy` is an easy manual fallback.
 
+Marmotize fork package: install this release branch with `npm install -g @marmotize/oracle`. Upstream remains `@steipete/oracle`.
+
 ## Setting up (macOS Browser Mode)
 
 Browser mode lets you use GPT-5.5 Pro without any API keys — it automates your Chrome browser directly.

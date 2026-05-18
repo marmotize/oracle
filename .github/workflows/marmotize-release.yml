@@ -1,0 +1,48 @@
+name: Marmotize Release
+
+on:
+  push:
+    branches: [release/marmotize]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  release:
+    if: github.repository == 'marmotize/oracle'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: corepack pnpm install --frozen-lockfile
+
+      - name: Validate
+        run: |
+          corepack pnpm run check
+          corepack pnpm run docs:check
+          corepack pnpm run test
+          corepack pnpm run build
+          corepack pnpm run test:packed-cli
+
+      - name: Create release PR or publish
+        uses: changesets/action@v1
+        with:
+          version: corepack pnpm release:version
+          publish: corepack pnpm release:publish
+          createGithubReleases: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true

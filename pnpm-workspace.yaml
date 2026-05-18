@@ -1,0 +1,15 @@
+packages:
+  - .
+
+overrides:
+  devtools-protocol: 0.0.1629771
+  vite: 7.3.2
+
+allowBuilds:
+  "@google/genai": true
+  esbuild: true
+  protobufjs: true
+
+minimumReleaseAge: 1440
+blockExoticSubdeps: true
+trustPolicy: no-downgrade

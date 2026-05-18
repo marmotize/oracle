@@ -1,10 +1,12 @@
 import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readdirSync, rmSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const repoRoot = process.cwd();
 const tmpRoot = mkdtempSync(join(tmpdir(), "oracle-packed-cli-"));
+const packageName = JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf8")).name;
+const packagePath = packageName.split("/");
 
 function run(command, args, options = {}) {
   return execFileSync(command, args, {
@@ -15,7 +17,7 @@ function run(command, args, options = {}) {
 }
 
 try {
-  run("pnpm", ["pack", "--pack-destination", tmpRoot]);
+  run("corepack", ["pnpm", "pack", "--pack-destination", tmpRoot]);
   const tarball = readdirSync(tmpRoot).find((entry) => entry.endsWith(".tgz"));
   if (!tarball) {
     throw new Error("pnpm pack did not produce a .tgz file");
@@ -27,15 +29,7 @@ try {
   run("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund", join(tmpRoot, tarball)], {
     cwd: installDir,
   });
-  const cliPath = join(
-    installDir,
-    "node_modules",
-    "@steipete",
-    "oracle",
-    "dist",
-    "bin",
-    "oracle-cli.js",
-  );
+  const cliPath = join(installDir, "node_modules", ...packagePath, "dist", "bin", "oracle-cli.js");
   const help = run(process.execPath, [cliPath, "--help", "--verbose"], { cwd: installDir });
 
   for (const expected of [
